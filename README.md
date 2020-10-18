@@ -1,6 +1,5 @@
 # bsffc - Bash Script For File Compressing
 
---------------------------------------------------------------------------------------------------
 ## Dependencies
 `tar xz-utils`
 
@@ -13,7 +12,7 @@
 
 ## Use
 Options:
-``
+
 Usage: fcs [options]
   -a|--all                      Compress all file in current directory.
   -i|--input <file>             Compress one file.
@@ -26,7 +25,6 @@ Usage: fcs [options]
                                 Default: (Number of processor - 1)
   -t|--type <compression>       Compression type:
                                 xz = tar.xz
-``
 
 ## Test
 bsffc is tested, under Debian stable and unstable almost every day.
