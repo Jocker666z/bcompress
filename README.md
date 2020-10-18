@@ -1,5 +1,8 @@
 # bsffc - Bash Script For File Compressing
 
+Simple bash tool for file compressing, with statistic report at end of job.
+
+--------------------------------------------------------------------------------------------------
 ## Dependencies
 `tar xz-utils`
 
@@ -14,17 +17,14 @@
 Options:
 
 Usage: fcs [options]
-  -a|--all                      Compress all file in current directory.
-  -i|--input <file>             Compress one file.
-  -i|--input <directory>        Compress one directory.
-  -d|--depth <number>           Specify find depth level.
-                                Default: 10
-  -e|--extension <ext1|ext2...> Compress all files with specific extension.
-  -h|--help                     Display this help.
-  -j|--jobs <number>            Number of file compressed in same time.
-                                Default: (Number of processor - 1)
-  -t|--type <compression>       Compression type:
-                                xz = tar.xz
+* -a|--all                      Compress all file in current directory.
+* -i|--input <file>             Compress one file.
+* -i|--input <directory>        Compress one directory.
+* -d|--depth <number>           Specify find depth level. Default: 10
+* -e|--extension <ext1|ext2...> Compress all files with specific extension.
+* -h|--help                     Display this help.
+* -j|--jobs <number>            Number of file compressed in same time. Default: (Number of processor - 1)
+* -t|--type <compression>       Compression type: xz = tar.xz
 
 ## Test
 bsffc is tested, under Debian stable and unstable almost every day.
