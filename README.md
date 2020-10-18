@@ -4,7 +4,7 @@ Simple bash tool for file compressing, with statistic report at end of job.
 
 --------------------------------------------------------------------------------------------------
 ## Dependencies
-`tar xz-utils`
+`tar xz-utils lz4 p7zip-full zip`
 
 ## Install
 * `cd && wget https://github.com/Jocker666z/bsffc/archive/master.zip`
@@ -24,7 +24,7 @@ Usage: fcs [options]
 * -e|--extension <ext1|ext2...> Compress all files with specific extension.
 * -h|--help                     Display this help.
 * -j|--jobs <number>            Number of file compressed in same time. Default: (Number of processor - 1)
-* -t|--type <compression>       Compression type: xz = tar.xz
+* -t|--type <compression>       Compression type: 7z (7zip), lz4 (tar.lz4), xz (tar.xz), zip
 
 ## Test
 bsffc is tested, under Debian stable and unstable almost every day.

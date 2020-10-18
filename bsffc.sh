@@ -7,7 +7,7 @@
 # licence : GNU GPL-2.0
 
 # Version
-VERSION=v0.01
+VERSION=v0.02
 
 # Paths
 FCS_PATH="$( cd "$( dirname "$0" )" && pwd )"												# set fcs.sh path
@@ -46,7 +46,10 @@ Usage: fcs [options]
   -j|--jobs <number>            Number of file compressed in same time.
                                 Default: $NPROC
   -t|--type <compression>       Compression type:
-                                xz = tar.xz
+                                7z (7zip)
+                                lz4 (tar.lz4)
+                                xz (tar.xz)
+                                zip
 
 EOF
 }
@@ -123,22 +126,36 @@ if [ "$SourceNotRemoved" = "1" ] ; then
 			done
 		;;
 		*)
-			break
+			exit
 		;;
 	esac
 fi
+
 }
 
+CompressCmd7z() {				# 7zip cmd
+SevenZip="1"
+CompressCMD="7z a -y -bsp0 -bso0 -t7z -m0=lzma -mx=9 -mfb=258 -md=32m -ms=on -mmt=on"
+}
+CompressCmdlz4() {				# lz4 cmd
+TAR="1"
+CompressCMD="lz4 -9 -q -q"
+}
 CompressCmdXz() {				# xz cmd
+TAR="1"
 CompressCMD="xz -q -9 -k -e --threads=0"
 }
-CompressRoutineTar() {			# tar.* cmd
+CompressCmdZip() {				# zip cmd
+ZIP="1"
+CompressCMD="zip -q"
+}
+CompressRoutine() {			#
 # Start time counter
 START=$(date +%s)
 
 # Message
 echo
-echo " fcs processing $EXT compression ($CompressCMD)"
+echo " bsffc processing $EXT compression ($CompressCMD)"
 echo "$MESS_SEPARATOR"
 
 # Compressing
@@ -148,17 +165,27 @@ for files in "${LSTCOMPRESS[@]}"; do
 	# Source size
 	DisplayLoadingSourceSize=$(du -cks "$files" | tail -n1 | awk '{print $1;}')
 	# Target file name
-	if [[ "$DIRECTORY" -eq 0 ]]; then		# If file
-		fileTarget="${files%.*}.tar.$EXT"
-	else									# If directory
-		fileTarget="${files%/}.tar.$EXT"
+	if [[ "$DIRECTORY" -eq 0 ]]; then			# If file
+		fileTarget="${files%.*}.$EXT"
+	else										# If directory
+		fileTarget="${files%/}.$EXT"
 	fi
 	# Stock source/target file pass in loop
 	filesSourceInLoop+=("$files")
 	filesTargetInLoop+=("$fileTarget")
 	(
 		# Compression
-		tar -cf - "$files" | eval "$CompressCMD" - > "$fileTarget"
+		if [[ "$TAR" -eq 1 ]]; then				# If tar
+			tar -cf - "$files" | eval "$CompressCMD" - > "$fileTarget"
+		elif [[ "$SevenZip" -eq 1 ]]; then		# If 7z
+			eval "$CompressCMD" '"$fileTarget"' '"$files"'
+		elif [[ "$ZIP" -eq 1 ]]; then			# If zip
+			if [[ "$DIRECTORY" -eq 0 ]]; then			# If file
+				eval "$CompressCMD" '"$fileTarget"' '"$files"'
+			else										# If directory
+				eval "$CompressCMD" '"$fileTarget"' '"$files"'/*
+			fi
+		fi
 		# Target size
 		DisplayLoadingTargetSize=$(du -cks "$fileTarget" | tail -n1 | awk '{print $1;}')
 		DisplayLoadingPercentage=$(bc <<< "scale=2; ($DisplayLoadingTargetSize - $DisplayLoadingSourceSize)/$DisplayLoadingSourceSize * 100")
@@ -198,7 +225,6 @@ while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
     -a|--all)																				# Compress all current files
-		shift
 		if [ -n "$InputFileDir" ] || [ -n "$FILE_EXT" ]; then
 			echo
 			echo "   -/!\- -a|--all option is not compatible with -i|--input & -e|--extension option."
@@ -298,10 +324,34 @@ trap TrapStop 20							# Set Ctrl+z clean trap for exit current loop (for debug)
 
 #
 case "$CompressType" in
+    7z)
+		EXT=7z
+		CompressCmd7z
+		CompressRoutine
+		Report
+		RemoveSourceFiles
+		RemoveTargetFiles
+    ;;
+    lz4)
+		EXT=tar.lz4
+		CompressCmdlz4
+		CompressRoutine
+		Report
+		RemoveSourceFiles
+		RemoveTargetFiles
+    ;;
     xz)
-		EXT=xz
+		EXT=tar.xz
 		CompressCmdXz
-		CompressRoutineTar
+		CompressRoutine
+		Report
+		RemoveSourceFiles
+		RemoveTargetFiles
+    ;;
+    zip)
+		EXT=zip
+		CompressCmdZip
+		CompressRoutine
 		Report
 		RemoveSourceFiles
 		RemoveTargetFiles
