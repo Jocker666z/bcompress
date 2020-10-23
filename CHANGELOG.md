@@ -1,4 +1,7 @@
 # Changelog
+v0.02:
+* add - support zstd compression
+* fix - multi extention selection, replace option selection "|" by "."
 
 v0.02:
 * fix - --all option, remove shift

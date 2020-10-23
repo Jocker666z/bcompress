@@ -41,7 +41,7 @@ Usage: fcs [options]
   -i|--input <directory>        Compress one directory.
   -d|--depth <number>           Specify find depth level.
                                 Default: $FINDDEPTH
-  -e|--extension <ext1|ext2...> Compress all files with specific extension.
+  -e|--extension <ext1.ext2...> Compress all files with specific extension.
   -h|--help                     Display this help.
   -j|--jobs <number>            Number of file compressed in same time.
                                 Default: $NPROC
@@ -50,6 +50,7 @@ Usage: fcs [options]
                                 lz4 (tar.lz4)
                                 xz (tar.xz)
                                 zip
+                                zstd (tar.zst)
 
 EOF
 }
@@ -148,6 +149,10 @@ CompressCMD="xz -q -9 -k -e --threads=0"
 CompressCmdZip() {				# zip cmd
 ZIP="1"
 CompressCMD="zip -q"
+}
+CompressCmdZstd() {				# lz4 cmd
+TAR="1"
+CompressCMD="zstd --ultra"
 }
 CompressRoutine() {			#
 # Start time counter
@@ -285,7 +290,7 @@ while [[ $# -gt 0 ]]; do
 			echo
 			exit
 		else
-			FILE_EXT="$1"
+			FILE_EXT="${1//./|}"															# Subtitute . by |
 		fi
     ;;
     -h|--help)																				# Help
@@ -351,6 +356,14 @@ case "$CompressType" in
     zip)
 		EXT=zip
 		CompressCmdZip
+		CompressRoutine
+		Report
+		RemoveSourceFiles
+		RemoveTargetFiles
+    ;;
+    zstd)
+		EXT=tar.zst
+		CompressCmdZstd
 		CompressRoutine
 		Report
 		RemoveSourceFiles
