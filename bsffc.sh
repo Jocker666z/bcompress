@@ -7,7 +7,7 @@
 # licence : GNU GPL-2.0
 
 # Version
-VERSION=v0.02
+VERSION=v0.03
 
 # Paths
 FCS_PATH="$( cd "$( dirname "$0" )" && pwd )"												# set fcs.sh path
