@@ -1,5 +1,5 @@
 # Changelog
-v0.02:
+v0.03:
 * add - support zstd compression
 * fix - multi extention selection, replace option selection "|" by "."
 
