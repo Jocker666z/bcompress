@@ -1,6 +1,6 @@
 # bsffc - Bash Script For File Compressing
 
-Simple bash tool for file compressing, with statistic report at end of job.
+Simple bash tool for file compressing at the highest ratio, with statistic report at end of job.
 
 --------------------------------------------------------------------------------------------------
 ## Dependencies
@@ -8,7 +8,7 @@ Simple bash tool for file compressing, with statistic report at end of job.
 
 ## Install
 * `cd && wget https://github.com/Jocker666z/bsffc/archive/master.zip`
-* `unzip master.zip && mv bsffc-master ffmes && rm master.zip`
+* `unzip master.zip && mv bsffc-master bsffc && rm master.zip`
 * `cd bsffc && chmod a+x bsffc.sh`
 * `echo "alias bsffc=\"bash ~/bsffc/bsffc.sh\"" >> ~/.bash_aliases && source ~/.bash_aliases` (alias optional but recommended & handy)
 
@@ -29,3 +29,6 @@ Usage: fcs [options]
 ## Test
 bsffc is tested, under Debian stable and unstable almost every day.
 If you encounter problems or have proposals, I am open to discussion.
+
+## Holy reading
+* http://mattmahoney.net/dc/text.html#about
