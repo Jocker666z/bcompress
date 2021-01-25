@@ -1,4 +1,4 @@
-# bcompress - Bash Script For File Compressing
+# bcompress
 
 Simple bash tool for file compressing at the highest ratio, with statistic report at end of job.
 
