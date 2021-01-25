@@ -1,4 +1,7 @@
 # Changelog
+v0.03a:
+* fix - readme
+
 v0.03:
 * add - support zstd compression
 * fix - multi extention selection, replace option selection "|" by "."

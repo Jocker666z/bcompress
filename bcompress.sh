@@ -2,12 +2,12 @@
 # bcompress - Bash Script For File Compressing
 #
 # Author : Romain Barbarot
-# https://github.com/Jocker666z/bsffc/
+# https://github.com/Jocker666z/bcompress/
 #
 # licence : GNU GPL-2.0
 
 # Paths
-FCS_PATH="$( cd "$( dirname "$0" )" && pwd )"												# set bcompress path
+bcompress_path="$( cd "$( dirname "$0" )" && pwd )"												# set bcompress path
 
 # General variables
 NPROC=$(nproc --all| awk '{ print $1 - 1 }')												# Set number of processor
