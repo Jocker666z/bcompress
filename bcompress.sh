@@ -1,16 +1,13 @@
 #!/bin/bash
-# bsffc - Bash Script For File Compressing
+# bcompress - Bash Script For File Compressing
 #
 # Author : Romain Barbarot
 # https://github.com/Jocker666z/bsffc/
 #
 # licence : GNU GPL-2.0
 
-# Version
-VERSION=v0.03
-
 # Paths
-FCS_PATH="$( cd "$( dirname "$0" )" && pwd )"												# set fcs.sh path
+FCS_PATH="$( cd "$( dirname "$0" )" && pwd )"												# set bcompress path
 
 # General variables
 NPROC=$(nproc --all| awk '{ print $1 - 1 }')												# Set number of processor
@@ -20,7 +17,7 @@ FINDDEPTH="10"
 # Messages
 MESS_SEPARATOR=" --------------------------------------------------------------"
 
-SetGlobalVariables() {			# Construct file in loop
+SetGlobalVariables() {				# Construct file in loop
 if test -n "$ARGUMENT"; then			# if argument
 	LSTCOMPRESS=()
 	LSTCOMPRESS+=("$ARGUMENT")
@@ -33,7 +30,7 @@ NBCOMPRESS="${#LSTCOMPRESS[@]}"
 }
 Usage() {
 cat <<- EOF
-fcs $VERSION - GNU GPL-2.0 Copyright - <https://github.com/Jocker666z/bsffc>
+bcompress $VERSION - GNU GPL-2.0 Copyright - <https://github.com/Jocker666z/bcompress>
 
 Usage: fcs [options]
   -a|--all                      Compress all file in current directory.
@@ -136,7 +133,8 @@ fi
 
 CompressCmd7z() {				# 7zip cmd
 SevenZip="1"
-CompressCMD="7z a -y -bsp0 -bso0 -t7z -m0=lzma -mx=9 -mfb=258 -md=32m -ms=on -mmt=on"
+#CompressCMD="7z a -y -bsp0 -bso0 -t7z -m0=lzma -mx=9 -mfb=258 -md=32m -ms=on -mmt=on"
+CompressCMD=" 7z a -y -bsp0 -bso0 -t7z -mx=9 -mfb=273 -ms -md=31 -myx=9 -mtm=- -mmt -mmtf -md=1536m -mmf=bt3 -mmc=10000 -mpb=0 -mlc=0"
 }
 CompressCmdlz4() {				# lz4 cmd
 TAR="1"
@@ -150,9 +148,12 @@ CompressCmdZip() {				# zip cmd
 ZIP="1"
 CompressCMD="zip -q"
 }
+CompressCmdZpack() {			# zpack cmd
+zpaq -m4 a zxtune.zpaq zxtune/
+}
 CompressCmdZstd() {				# lz4 cmd
 TAR="1"
-CompressCMD="zstd --ultra"
+CompressCMD="zstd --ultra -q"
 }
 CompressRoutine() {			#
 # Start time counter
