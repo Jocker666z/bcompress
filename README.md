@@ -7,7 +7,7 @@ Simple bash tool for file compressing at the highest ratio, with statistic repor
 `tar lz4 p7zip-full xz-utils zip zstd`
 
 ## Install
-`curl https://raw.githubusercontent.com/Jocker666z/bcompress/master/bcompress.sh > /home/$USER/.local/bin/vgm2flac && chmod +rx /home/$USER/.local/bin/bcompress`
+`curl https://raw.githubusercontent.com/Jocker666z/bcompress/master/bcompress.sh > /home/$USER/.local/bin/bcompress && chmod +rx /home/$USER/.local/bin/bcompress`
 
 
 ## Use
