@@ -13,7 +13,8 @@ if available use the binaries allowing parallelisation: `pbzip2 pgz pxz`
 
 
 ## Use
-Usage: bcompress [options]
+```
+Usage: bcompress options
   -a|--all                      Compress all file in current directory.
   -i|--input <file>             Compress one file.
   -i|--input <directory>        Compress one directory.
@@ -26,10 +27,13 @@ Usage: bcompress [options]
   -t|--type <compression>       Compression type:
                                 7z (7zip)
                                 bz2 (tar.bz2)
+                                gzip (tar.gz)
                                 lz4 (tar.lz4)
                                 xz (tar.xz) (default)
                                 zip
+                                zpaq
                                 zstd (tar.zst)
+```
 
 ## Test
 bcompress is tested, under Debian stable and unstable almost every day.
