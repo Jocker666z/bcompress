@@ -1,4 +1,12 @@
 # Changelog
+v0.04:
+* clean code & syntax
+* add support of bzip2
+* add support of zpaq
+* add more precise/human redeable report for smaller files, with byte, kbyte, mbyte calcul
+* add default compression type, if no selection xz used
+* now launch nothing if no selection with -i or -a
+
 v0.03a:
 * fix - readme
 
