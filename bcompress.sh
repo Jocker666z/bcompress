@@ -40,9 +40,11 @@ Usage: bcompress [options]
   -t|--type <compression>       Compression type:
                                 7z (7zip)
                                 bz2 (tar.bz2)
+                                gzip (tar.gz)
                                 lz4 (tar.lz4)
                                 xz (tar.xz) (default)
                                 zip
+                                zpaq
                                 zstd (tar.zst)
 
 EOF
