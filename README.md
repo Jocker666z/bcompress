@@ -4,9 +4,9 @@ Simple bash tool for file compressing at the highest ratio, with statistic repor
 
 --------------------------------------------------------------------------------------------------
 ## Dependencies
-`bzip2 lz4 p7zip-full tar xz-utils zpaq zip zstd`
+`bzip2 gzip lrzip lz4 lzip p7zip-full tar xz-utils zpaq zip zstd`
 
-if available use the binaries allowing parallelisation: `pbzip2 pgz pxz`
+if available use the binaries allowing parallelisation: `pbzip2 pigz plzip pxz`
 
 ## Install
 `curl https://raw.githubusercontent.com/Jocker666z/bcompress/master/bcompress.sh > /home/$USER/.local/bin/vgm2flac && chmod +rx /home/$USER/.local/bin/bcompress`
@@ -25,10 +25,12 @@ Usage: bcompress options
   -j|--jobs <number>            Number of file compressed in same time.
                                 Default: $nprocessor
   -t|--type <compression>       Compression type:
-                                7z (7zip)
-                                bz2 (tar.bz2)
+                                7zip (7z)
+                                bzip2 (tar.bz2)
                                 gzip (tar.gz)
+                                lrzip (lzr)
                                 lz4 (tar.lz4)
+                                lzip (tar.lz)
                                 xz (tar.xz) (default)
                                 zip
                                 zpaq

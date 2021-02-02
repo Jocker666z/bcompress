@@ -1,9 +1,16 @@
 # Changelog
 v0.04:
+* add support of lzip
+* add support of lrzip
+* improve compression of zstd with -22 option
+* improve compression of lz4, replace -9 by -c2
+* replace pgz by pigz and improve compression with -11 option
+
+v0.04:
 * clean code & syntax
 * add support of bzip2
 * add support of zpaq
-* add more precise/human redeable report for smaller files, with byte, kbyte, mbyte calcul
+* add more precise/human readable report for smaller files, with byte, kbyte, mbyte calcul
 * add default compression type, if no selection xz used
 * now launch nothing if no selection with -i or -a
 

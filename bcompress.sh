@@ -38,10 +38,12 @@ Usage: bcompress [options]
   -j|--jobs <number>            Number of file compressed in same time.
                                 Default: $nprocessor
   -t|--type <compression>       Compression type:
-                                7z (7zip)
-                                bz2 (tar.bz2)
+                                7zip (7z)
+                                bzip2 (tar.bz2)
                                 gzip (tar.gz)
+                                lrzip (lzr)
                                 lz4 (tar.lz4)
+                                lzip (tar.lz)
                                 xz (tar.xz) (default)
                                 zip
                                 zpaq
@@ -134,7 +136,7 @@ CompressCMD="7z a -y -bsp0 -bso0 -t7z -mx=9 -mfb=273 -ms -md=31 -myx=9 -mtm=- -m
 }
 CompressCmdbz2() {				# bz2 cmd
 TAR="1"
-local system_bin_location=$(which $pbzip2)
+local system_bin_location=$(which pbzip2)
 if test -n "$system_bin_location"; then
 	CompressCMD="pbzip2 -9 -q"
 else
@@ -143,20 +145,42 @@ fi
 }
 CompressCmdgzip() {				# gzip cmd
 TAR="1"
-local system_bin_location=$(which $pgz)
+local system_bin_location=$(which pigz)
 if test -n "$system_bin_location"; then
-	CompressCMD="pgzip -9 -q"
+	CompressCMD="pigz -11 -q"
 else
 	CompressCMD="gzip -9 -q"
 fi
 }
+CompressCmdlrzip() {			# lrzip cmd
+if [[ "$DIRECTORY" -eq 0 ]]; then			# If file
+	CompressCMD="lrzip -f -q -z -L 9 -p 1"
+else
+	EXT="tar.lrz"
+	CompressCMD="lrztar -f -q -z -L 9 -p 1"
+fi
+}
 CompressCmdlz4() {				# lz4 cmd
 TAR="1"
-CompressCMD="lz4 -9 -q -q"
+CompressCMD="lz4 -c2 -q -q"
+}
+CompressCmdlzip() {				# lzip cmd
+TAR="1"
+local system_bin_location=$(which plzip)
+if test -n "$system_bin_location"; then
+	CompressCMD="plzip -9 -s512MiB -q"
+else
+	CompressCMD="lzip -9 -s512MiB -q"
+fi
 }
 CompressCmdXz() {				# xz cmd
 TAR="1"
-CompressCMD="xz -q -9 -k -e --threads=0"
+local system_bin_location=$(which pxz)
+if test -n "$system_bin_location"; then
+	CompressCMD="pxz -q -9 -k -e --threads=0"
+else
+	CompressCMD="xz -q -9 -k -e --threads=0"
+fi
 }
 CompressCmdZip() {				# zip cmd
 CompressCMD="zip -q"
@@ -166,7 +190,7 @@ CompressCMD="zpaq -m5 a"
 }
 CompressCmdZstd() {				# lz4 cmd
 TAR="1"
-CompressCMD="zstd --ultra -q"
+CompressCMD="zstd --ultra -22 -q"
 }
 
 CompressRoutine() {				# Master compress loop
@@ -195,19 +219,30 @@ for files in "${lst_compress[@]}"; do
 	filesTargetInLoop+=("$fileTarget")
 	(
 		# Compression
-		if [[ "$TAR" -eq 1 ]]; then											# If tar
+		if [[ "$TAR" -eq 1 ]]; then												# If tar.gz, bz2, lz4, xz
 			tar -cf - "$files" | eval "$CompressCMD" > "$fileTarget"
-		elif [[ "$EXT" = "7z" ]]; then										# If 7z
+
+		elif [[ "$EXT" = "7z" ]]; then											# If 7z
 			eval "$CompressCMD" '"$fileTarget"' '"$files"'
-		elif [[ "$EXT" = "zpaq" ]]; then									# If zpaq
+
+		elif [[ "$EXT" == *"lrz" ]]; then										# If lrzip
+			if [[ "$DIRECTORY" -eq 0 ]]; then			# If file
+				eval "$CompressCMD" '"$files"' -o '"$fileTarget"'
+			else										# If directory
+				eval "$CompressCMD" '"$files"'
+			fi
+
+		elif [[ "$EXT" = "zpaq" ]]; then										# If zpaq
 				eval "$CompressCMD" '"$fileTarget"' '"$files"' &>/dev/null
-		elif [[ "$EXT" = "zip" ]]; then										# If zip
-			if [[ "$DIRECTORY" -eq 0 ]]; then								# If file
+
+		elif [[ "$EXT" = "zip" ]]; then											# If zip
+			if [[ "$DIRECTORY" -eq 0 ]]; then									# If file
 				eval "$CompressCMD" '"$fileTarget"' '"$files"'
-			else															# If directory
+			else																# If directory
 				eval "$CompressCMD" '"$fileTarget"' '"$files"'/*
 			fi
 		fi
+
 		# Target size
 		DisplayLoadingTargetSize=$(du -cbs "$fileTarget" | tail -n1 | awk '{print $1;}')
 		DisplayLoadingPercentage=$(bc <<< "scale=2; ($DisplayLoadingTargetSize - $DisplayLoadingSourceSize)/$DisplayLoadingSourceSize * 100")
@@ -274,7 +309,7 @@ while [[ $# -gt 0 ]]; do
 			echo
 			exit
 		else
-			unset find_depth																	# Unset default find_depth
+			unset find_depth																# Unset default find_depth
 			find_depth="1"
 			FILE_EXT="*.*"
 		fi
@@ -308,14 +343,14 @@ while [[ $# -gt 0 ]]; do
 			echo
 			exit
 		else
-			if ! [[ "$1" =~ ^[0-9]+$ ]] ; then													# If not integer
+			if ! [[ "$1" =~ ^[0-9]+$ ]] ; then												# If not integer
 				echo "   -/!\- Depth must be an integer."
 				exit
-			elif [[ "$1" -lt 1 ]] ; then														# If result inferior than 1
+			elif [[ "$1" -lt 1 ]] ; then													# If result inferior than 1
 				echo "   -/!\- Depth must be greater than zero."
 				exit
 			else
-				unset find_depth																	# Unset default find_depth
+				unset find_depth															# Unset default find_depth
 				find_depth="$1"
 			fi
 		fi
@@ -341,9 +376,9 @@ while [[ $# -gt 0 ]]; do
 			echo "   -/!\- Number of job must be an integer."
 			exit
 		else
-			unset nprocessor																		# Unset default nprocessor
-			nprocessor=$(( $1 - 1 ))																# Substraction
-			if [[ "$nprocessor" -lt 0 ]] ; then													# If result inferior than 0
+			unset nprocessor																# Unset default nprocessor
+			nprocessor=$(( $1 - 1 ))														# Substraction
+			if [[ "$nprocessor" -lt 0 ]] ; then												# If result inferior than 0
 				echo "   -/!\- Number of job must be greater than zero."
 				exit
 			fi
@@ -368,11 +403,11 @@ trap TrapStop 20							# Set Ctrl+z clean trap for exit current loop (for debug)
 #
 if (( "${#lst_compress[@]}" )); then		# Launch nothing if no selection with -i or -a
 	case "$CompressType" in
-		7z)
+		7zip)
 			EXT=7z
 			CompressCmd7z
 		;;
-		bz2)
+		bzip2)
 			EXT=tar.bz2
 			CompressCmdbz2
 		;;
@@ -380,9 +415,17 @@ if (( "${#lst_compress[@]}" )); then		# Launch nothing if no selection with -i o
 			EXT=tar.gz
 			CompressCmdgzip
 		;;
+		lrzip)
+			EXT=lrz
+			CompressCmdlrzip
+		;;
 		lz4)
 			EXT=tar.lz4
 			CompressCmdlz4
+		;;
+		lzip)
+			EXT=tar.lz
+			CompressCmdlzip
 		;;
 		xz)
 			EXT=tar.xz
