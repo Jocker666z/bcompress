@@ -1,5 +1,5 @@
 # Changelog
-v0.04:
+v0.05:
 * add support of lzip
 * add support of lrzip
 * improve compression of zstd with -22 option

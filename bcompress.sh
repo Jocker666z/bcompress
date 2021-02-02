@@ -7,7 +7,7 @@
 # licence : GNU GPL-2.0
 
 # General variables
-bcompress_version="0.04"
+bcompress_version="0.05"
 nprocessor=$(nproc --all| awk '{ print $1 - 1 }')											# Set number of processor
 find_depth="10"																				# Default find depth
 CompressType="xz"
