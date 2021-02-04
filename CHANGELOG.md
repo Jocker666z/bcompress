@@ -1,4 +1,9 @@
 # Changelog
+v0.06:
+* remove -1 in nproc
+* add bin install check
+* update usage readme
+
 v0.05:
 * add support of lzip
 * add support of lrzip

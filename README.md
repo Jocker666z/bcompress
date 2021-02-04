@@ -1,4 +1,4 @@
-# bcompress - Bash Script For File Compressing
+# bcompress
 
 Simple bash tool for file compressing at the highest ratio, with statistic report at end of job.
 
@@ -6,7 +6,7 @@ Simple bash tool for file compressing at the highest ratio, with statistic repor
 ## Dependencies
 `bzip2 gzip lrzip lz4 lzip p7zip-full tar xz-utils zpaq zip zstd`
 
-if available use the binaries allowing parallelisation: `pbzip2 pigz plzip pxz`
+if available, bcompress use the binaries allowing parallelisation: `pbzip2 pigz plzip`
 
 ## Install
 `curl https://raw.githubusercontent.com/Jocker666z/bcompress/master/bcompress.sh > /home/$USER/.local/bin/vgm2flac && chmod +rx /home/$USER/.local/bin/bcompress`
@@ -14,16 +14,19 @@ if available use the binaries allowing parallelisation: `pbzip2 pigz plzip pxz`
 
 ## Use
 ```
-Usage: bcompress options
+Usage: 
+   bcompress options <file> or <dir>
+   or
+   bcompress options -e <ext1.ext2...>
+Options:
   -a|--all                      Compress all file in current directory.
-  -i|--input <file>             Compress one file.
-  -i|--input <directory>        Compress one directory.
+  -i|--input <file> or <dir>    Compress one file or directory.
   -d|--depth <number>           Specify find depth level.
-                                Default: $find_depth
-  -e|--extension <ext1.ext2...> Compress all files with specific extension.
+                                Default: 10
+  -e|--extension <ext1.ext2...> Compress all files in depth with specific extension.
   -h|--help                     Display this help.
   -j|--jobs <number>            Number of file compressed in same time.
-                                Default: $nprocessor
+                                Default: processor number
   -t|--type <compression>       Compression type:
                                 7zip (7z)
                                 bzip2 (tar.bz2)
@@ -33,8 +36,6 @@ Usage: bcompress options
                                 lzip (tar.lz)
                                 xz (tar.xz) (default)
                                 zip
-                                zpaq
-                                zstd (tar.zst)
 ```
 
 ## Test
@@ -42,4 +43,4 @@ bcompress is tested, under Debian stable and unstable almost every day.
 If you encounter problems or have proposals, I am open to discussion.
 
 ## Holy reading
-* http://mattmahoney.net/dc/text.html#about
+* http://mattmahoney.net/dc/text.html

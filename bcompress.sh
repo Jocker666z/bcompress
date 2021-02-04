@@ -7,8 +7,8 @@
 # licence : GNU GPL-2.0
 
 # General variables
-bcompress_version="0.05"
-nprocessor=$(nproc --all| awk '{ print $1 - 1 }')											# Set number of processor
+bcompress_version="0.06"
+nprocessor=$(nproc --all)																	# Set number of processor
 find_depth="10"																				# Default find depth
 CompressType="xz"
 
@@ -27,13 +27,16 @@ Usage() {
 cat <<- EOF
 bcompress $bcompress_version - GNU GPL-2.0 Copyright - <https://github.com/Jocker666z/bcompress>
 
-Usage: bcompress [options]
+Usage: 
+   bcompress [options] <file> or <dir>
+   or
+   bcompress [options] -e <ext1.ext2...>
+Options:
   -a|--all                      Compress all file in current directory.
-  -i|--input <file>             Compress one file.
-  -i|--input <directory>        Compress one directory.
+  -i|--input <file> or <dir>    Compress one file or directory.
   -d|--depth <number>           Specify find depth level.
                                 Default: $find_depth
-  -e|--extension <ext1.ext2...> Compress all files with specific extension.
+  -e|--extension <ext1.ext2...> Compress all files in depth with specific extension.
   -h|--help                     Display this help.
   -j|--jobs <number>            Number of file compressed in same time.
                                 Default: $nprocessor
@@ -130,67 +133,106 @@ if [ "$SourceNotRemoved" = "1" ] ; then
 fi
 
 }
+TarTest() {						# Test tar installed
+hash tar 2>/dev/null || { echo >&2 "tar it's not installed. Aborting."; exit; }
+}
 
 CompressCmd7z() {				# 7zip cmd
-CompressCMD="7z a -y -bsp0 -bso0 -t7z -mx=9 -mfb=273 -ms -md=31 -myx=9 -mtm=- -mmt -mmtf -md=1536m -mmf=bt3 -mmc=10000 -mpb=0 -mlc=0"
+if hash 7z 2>/dev/null; then
+	CompressCMD="7z a -y -bsp0 -bso0 -t7z -mx=9 -mfb=273 -ms -md=31 -myx=9 -mtm=- -mmt -mmtf -md=1536m -mmf=bt3 -mmc=10000 -mpb=0 -mlc=0"
+else
+	echo "7z it's not installed. Aborting."
+	exit
+fi
 }
 CompressCmdbz2() {				# bz2 cmd
 TAR="1"
-local system_bin_location=$(which pbzip2)
-if test -n "$system_bin_location"; then
+if hash pbzip2 2>/dev/null; then
 	CompressCMD="pbzip2 -9 -q"
-else
+elif hash bzip2 2>/dev/null; then
 	CompressCMD="bzip2 -9 -q"
+else
+	echo "bzip2 it's not installed. Aborting."
+	exit
 fi
 }
 CompressCmdgzip() {				# gzip cmd
 TAR="1"
-local system_bin_location=$(which pigz)
-if test -n "$system_bin_location"; then
+if hash pbzip2 2>/dev/null; then
 	CompressCMD="pigz -11 -q"
-else
+elif hash bzip2 2>/dev/null; then
 	CompressCMD="gzip -9 -q"
+else
+	echo "gzip it's not installed. Aborting."
+	exit
 fi
 }
 CompressCmdlrzip() {			# lrzip cmd
-if [[ "$DIRECTORY" -eq 0 ]]; then			# If file
-	CompressCMD="lrzip -f -q -z -L 9 -p 1"
+if hash lrzip 2>/dev/null; then
+	if [[ "$DIRECTORY" -eq 0 ]]; then			# If file
+		CompressCMD="lrzip -f -q -z -L 9 -p 1"
+	else
+		EXT="tar.lrz"
+		CompressCMD="lrztar -f -q -z -L 9 -p 1"
+	fi
 else
-	EXT="tar.lrz"
-	CompressCMD="lrztar -f -q -z -L 9 -p 1"
+	echo "lrzip it's not installed. Aborting."
+	exit
 fi
 }
 CompressCmdlz4() {				# lz4 cmd
 TAR="1"
-CompressCMD="lz4 -c2 -q -q"
+if hash lz4 2>/dev/null; then
+	CompressCMD="lz4 -c2 -q -q"
+else
+	echo "lz4 it's not installed. Aborting."
+	exit
+fi
 }
 CompressCmdlzip() {				# lzip cmd
 TAR="1"
-local system_bin_location=$(which plzip)
-if test -n "$system_bin_location"; then
+if hash plzip 2>/dev/null; then
 	CompressCMD="plzip -9 -s512MiB -q"
-else
+elif hash lzip 2>/dev/null; then
 	CompressCMD="lzip -9 -s512MiB -q"
+else
+	echo "lzip it's not installed. Aborting."
+	exit
 fi
 }
 CompressCmdXz() {				# xz cmd
 TAR="1"
-local system_bin_location=$(which pxz)
-if test -n "$system_bin_location"; then
-	CompressCMD="pxz -q -9 -k -e --threads=0"
-else
+if hash xz 2>/dev/null; then
 	CompressCMD="xz -q -9 -k -e --threads=0"
+else
+	echo "xz it's not installed. Aborting."
+	exit
 fi
 }
 CompressCmdZip() {				# zip cmd
-CompressCMD="zip -q"
+if hash zip 2>/dev/null; then
+	CompressCMD="zip -q"
+else
+	echo "zip it's not installed. Aborting."
+	exit
+fi
 }
 CompressCmdZpaq() {				# zpaq cmd
-CompressCMD="zpaq -m5 a"
+if hash zpaq 2>/dev/null; then
+	CompressCMD="zpaq -m5 a"
+else
+	echo "zpaq it's not installed. Aborting."
+	exit
+fi
 }
 CompressCmdZstd() {				# lz4 cmd
 TAR="1"
-CompressCMD="zstd --ultra -22 -q"
+if hash zstd 2>/dev/null; then
+	CompressCMD="zstd --ultra -22 -q"
+else
+	echo "zstd it's not installed. Aborting."
+	exit
+fi
 }
 
 CompressRoutine() {				# Master compress loop
@@ -399,6 +441,7 @@ done
 SetGlobalVariables
 trap TrapExit 2 3							# Set Ctrl+c clean trap for exit all script
 trap TrapStop 20							# Set Ctrl+z clean trap for exit current loop (for debug)
+TarTest
 
 #
 if (( "${#lst_compress[@]}" )); then		# Launch nothing if no selection with -i or -a
