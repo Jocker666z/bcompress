@@ -1,4 +1,7 @@
 # Changelog
+v0.06a:
+* label fix
+
 v0.06:
 * remove -1 in nproc
 * add bin install check

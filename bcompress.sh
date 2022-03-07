@@ -7,7 +7,7 @@
 # licence : GNU GPL-2.0
 
 # General variables
-bcompress_version="0.06"
+bcompress_version="0.06a"
 nprocessor=$(nproc --all)																	# Set number of processor
 find_depth="10"																				# Default find depth
 CompressType="xz"
@@ -241,7 +241,7 @@ START=$(date +%s)
 
 # Message
 echo
-echo " bsffc processing $EXT compression ($CompressCMD)"
+echo " bcompress processing $EXT compression ($CompressCMD)"
 echo "$message_separator"
 
 # Compressing
