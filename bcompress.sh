@@ -219,7 +219,7 @@ fi
 }
 CompressCmdZpaq() {				# zpaq cmd
 if hash zpaq 2>/dev/null; then
-	CompressCMD="zpaq -m5 a"
+	CompressCMD="zpaq -m4 a"
 else
 	echo "zpaq it's not installed. Aborting."
 	exit
