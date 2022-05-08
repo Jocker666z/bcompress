@@ -15,12 +15,18 @@ CompressType="xz"
 # Messages
 message_separator=" --------------------------------------------------------------"
 
-SetGlobalVariables() {			# Construct file array
+SetGlobalVariables() {					# Construct file array
 if test -n "$ARGUMENT"; then			# if argument
 	lst_compress=()
 	lst_compress+=("$ARGUMENT")
-else									# if no argument
-	mapfile -t lst_compress < <(find . -maxdepth $find_depth -type f -regextype posix-egrep -iregex '.*\.('$FILE_EXT')$' 2>/dev/null | sort | sed 's/^..//')
+elif [[ "$find_dir" = "1" ]]; then
+	mapfile -t lst_compress < <(find . -maxdepth $find_depth \
+								-type d 2>/dev/null \
+								| sort | sed 's/^..//' | tail -n +2)
+else
+	mapfile -t lst_compress < <(find . -maxdepth $find_depth \
+								-type f -regextype posix-egrep -iregex '.*\.('$FILE_EXT')$' 2>/dev/null \
+								| sort | sed 's/^..//')
 fi
 }
 Usage() {
@@ -32,7 +38,8 @@ Usage:
    or
    bcompress [options] -e <ext1.ext2...>
 Options:
-  -a|--all                      Compress all file in current directory.
+  -a|--all                      Compress all files in current directory.
+  -ad|--all                     Compress all directory in current.
   -i|--input <file> or <dir>    Compress one file or directory.
   -d|--depth <number>           Specify find depth level.
                                 Default: $find_depth
@@ -351,9 +358,19 @@ while [[ $# -gt 0 ]]; do
 			echo
 			exit
 		else
-			unset find_depth																# Unset default find_depth
 			find_depth="1"
 			FILE_EXT="*.*"
+		fi
+    ;;
+    -ad|--all_dir)																				# Compress all dir
+		if [ -n "$InputFileDir" ] || [ -n "$FILE_EXT" ]; then
+			echo
+			echo "   -/!\- -a|--all option is not compatible with -i|--input & -e|--extension option."
+			echo
+			exit
+		else
+			find_depth="1"
+			find_dir="1"
 		fi
     ;;
     -i|--input)
