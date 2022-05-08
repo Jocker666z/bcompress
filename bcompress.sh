@@ -273,7 +273,6 @@ for files in "${lst_compress[@]}"; do
 
 		StartLoading "" ""
 
-		(
 		if [[ "$TAR" -eq 1 ]]; then												# If tar.gz, bz2, lz4, xz
 			tar -cf - "$files" | eval "$CompressCMD" > "$fileTarget"
 
@@ -306,13 +305,10 @@ for files in "${lst_compress[@]}"; do
 			DisplayLoadingPercentage="+$DisplayLoadingPercentage"
 		fi
 		StopLoading $?
-		) &
-		if [[ $(jobs -r -p | wc -l) -gt $nprocessor ]]; then
-			wait -n
-		fi
 	fi
+
 done
-#wait
+
 stty -igncr										# Enable the enter key
 
 # End time counter
