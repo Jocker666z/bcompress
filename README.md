@@ -37,6 +37,8 @@ Options:
                                 lzip (tar.lz)
                                 xz (tar.xz) (default)
                                 zip
+                                zpaq
+                                zstd (tar.zst)
 ```
 
 ## Test
