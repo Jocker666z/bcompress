@@ -254,7 +254,6 @@ echo "$message_separator"
 # Compressing
 stty igncr										# Disable the enter key
 for files in "${lst_compress[@]}"; do
-	StartLoading "" ""
 	# Source size
 	DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 	# Target file name
@@ -263,11 +262,18 @@ for files in "${lst_compress[@]}"; do
 	else										# If directory
 		fileTarget="${files%/}.$EXT"
 	fi
-	# Stock source/target file pass in loop
-	filesSourceInLoop+=("$files")
+	# Stock target file pass in loop
 	filesTargetInLoop+=("$fileTarget")
-	(
-		# Compression
+
+	# Compression
+	if ! [[ -s "$fileTarget" ]]; then
+	
+		# Stock source file pass in loop
+		filesSourceInLoop+=("$files")
+
+		StartLoading "" ""
+
+		(
 		if [[ "$TAR" -eq 1 ]]; then												# If tar.gz, bz2, lz4, xz
 			tar -cf - "$files" | eval "$CompressCMD" > "$fileTarget"
 
@@ -304,47 +310,56 @@ for files in "${lst_compress[@]}"; do
 		if [[ $(jobs -r -p | wc -l) -gt $nprocessor ]]; then
 			wait -n
 		fi
+	fi
 done
-wait
+#wait
 stty -igncr										# Enable the enter key
 
 # End time counter
 END=$(date +%s)
 }
 Report() {
-# Make statistics of processed files
-DIFFS=$(($END-$START))
-local NBSourceFiles="${#filesSourceInLoop[@]}"
-local NBTargetFiles="${#filesTargetInLoop[@]}"
-local SizeSourceFiles=$(du -chsb "${filesSourceInLoop[@]}" | tail -n1 | awk '{print $1;}')
-local SizeTargetFiles=$(du -chsb "${filesTargetInLoop[@]}" | tail -n1 | awk '{print $1;}')
-local SizePercentage=$(bc <<< "scale=2; ($SizeTargetFiles - $SizeSourceFiles)/$SizeSourceFiles * 100")
+if (( "${#filesSourceInLoop[@]}" )); then
+	# Make statistics of processed files
+	DIFFS=$(($END-$START))
+	local NBSourceFiles="${#filesSourceInLoop[@]}"
+	local NBTargetFiles="${#filesTargetInLoop[@]}"
+	local SizeSourceFiles=$(du -chsb "${filesSourceInLoop[@]}" | tail -n1 | awk '{print $1;}')
+	local SizeTargetFiles=$(du -chsb "${filesTargetInLoop[@]}" | tail -n1 | awk '{print $1;}')
+	local SizePercentage=$(bc <<< "scale=2; ($SizeTargetFiles - $SizeSourceFiles)/$SizeSourceFiles * 100")
 
-# Add + if no - or 0
-if [[ "$SizePercentage" != -* ]] && [[ "$SizePercentage" != 0* ]]; then
-	local SizePercentage="+$SizePercentage"
+	# Add + if no - or 0
+	if [[ "$SizePercentage" != -* ]] && [[ "$SizePercentage" != 0* ]]; then
+		local SizePercentage="+$SizePercentage"
+	fi
+
+	# Make human readable size
+	if [ "$SizeTargetFiles" -ge 1 ] && [ "$SizeTargetFiles" -le 1024 ]; then				# Byte display 1b -> 1kb
+		local size_unit="B"
+	elif [ "$SizeTargetFiles" -ge 1025 ] && [ "$SizeTargetFiles" -le 10485760 ]; then		# Kbyte display 1kb -> 10mb
+		local size_unit="kB"
+		local SizeSourceFiles=$(( SizeSourceFiles / 1024 ))
+		local SizeTargetFiles=$(( SizeTargetFiles / 1024 ))
+	elif [ "$SizeTargetFiles" -ge 10485761 ]; then											# Mbyte display 10 mb ->
+		local size_unit="MB"
+		local SizeSourceFiles=$(( SizeSourceFiles / 1024 / 1024 ))
+		local SizeTargetFiles=$(( SizeTargetFiles / 1024 / 1024 ))
+	fi
+
+	# Display report
+	echo "$message_separator"
+	echo " $NBTargetFiles/$NBSourceFiles file(s) have been processed."
+	echo " Created file(s) size: $SizeTargetFiles $size_unit, a difference of $SizePercentage% from the source(s) ($SizeSourceFiles $size_unit)."
+	echo " End of processing: $(date +%D\ at\ %Hh%Mm), duration: $((DIFFS/3600))h$((DIFFS%3600/60))m$((DIFFS%60))s."
+	echo "$message_separator"
+	echo
+else
+	# Display report
+	echo " No file to be processed"
+	echo "$message_separator"
+	echo
+	exit
 fi
-
-# Make human readable size
-if [ "$SizeTargetFiles" -ge 1 ] && [ "$SizeTargetFiles" -le 1024 ]; then				# Byte display 1b -> 1kb
-	local size_unit="B"
-elif [ "$SizeTargetFiles" -ge 1025 ] && [ "$SizeTargetFiles" -le 10485760 ]; then		# Kbyte display 1kb -> 10mb
-	local size_unit="kB"
-	local SizeSourceFiles=$(( SizeSourceFiles / 1024 ))
-	local SizeTargetFiles=$(( SizeTargetFiles / 1024 ))
-elif [ "$SizeTargetFiles" -ge 10485761 ]; then											# Mbyte display 10 mb ->
-	local size_unit="MB"
-	local SizeSourceFiles=$(( SizeSourceFiles / 1024 / 1024 ))
-	local SizeTargetFiles=$(( SizeTargetFiles / 1024 / 1024 ))
-fi
-
-# Display report
-echo "$message_separator"
-echo " $NBTargetFiles/$NBSourceFiles file(s) have been processed."
-echo " Created file(s) size: $SizeTargetFiles $size_unit, a difference of $SizePercentage% from the source(s) ($SizeSourceFiles $size_unit)."
-echo " End of processing: $(date +%D\ at\ %Hh%Mm), duration: $((DIFFS/3600))h$((DIFFS%3600/60))m$((DIFFS%60))s."
-echo "$message_separator"
-echo
 }
 
 # Arguments variables
