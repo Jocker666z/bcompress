@@ -109,15 +109,13 @@ RemoveSourceFiles() {			# Remove source files
 read -p " Remove source files? [y/N]: " qrm
 case "$qrm" in
 	"Y"|"y")
-		if [[ "$DIRECTORY" -eq 0 ]]; then		# If file
-			for f in "${filesSourceInLoop[@]}"; do
-				rm -f "$f" 2> /dev/null
-			done
-		else									# If directory
-			for f in "${filesSourceInLoop[@]}"; do
+		for f in "${filesSourceInLoop[@]}"; do
+			if [ -d "$f" ]; then
 				rm -R -f "$f" 2> /dev/null
-			done
-		fi
+			else
+				rm -f "$f" 2> /dev/null
+			fi
+		done
 	;;
 	*)
 		SourceNotRemoved="1"
