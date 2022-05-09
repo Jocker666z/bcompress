@@ -6,8 +6,6 @@ Simple bash tool for file compressing at the highest ratio, with statistic repor
 ## Dependencies
 `bzip2 gzip lrzip lz4 lzip p7zip-full tar xz-utils zpaq zip zstd`
 
-if available, bcompress use the binaries allowing parallelisation: `pbzip2 pigz plzip`
-
 ## Install
 `curl https://raw.githubusercontent.com/Jocker666z/bcompress/master/bcompress.sh > /home/$USER/.local/bin/vgm2flac && chmod +rx /home/$USER/.local/bin/bcompress`
 
@@ -32,7 +30,6 @@ Options:
                                 7zip (7z)
                                 bzip2 (tar.bz2)
                                 gzip (tar.gz)
-                                lrzip (lzr)
                                 lz4 (tar.lz4)
                                 lzip (tar.lz)
                                 xz (tar.xz) (default)
