@@ -412,6 +412,7 @@ if (( "${#filesSourceInLoop[@]}" )); then
 	local SizeSourceFiles
 	local SizeTargetFiles
 	local SizePercentage
+	local size_unit
 	
 	# Make statistics of processed files
 	DIFFS=$(( END-START ))
@@ -429,17 +430,17 @@ if (( "${#filesSourceInLoop[@]}" )); then
 	# Make human readable size
 	# Byte display 1b -> 1kb
 	if [ "$SizeTargetFiles" -ge 1 ] && [ "$SizeTargetFiles" -le 1024 ]; then
-		local size_unit="B"
+		size_unit="B"
 	# Kbyte display 1kb -> 10mb
 	elif [ "$SizeTargetFiles" -ge 1025 ] && [ "$SizeTargetFiles" -le 10485760 ]; then
-		local size_unit="kB"
-		local SizeSourceFiles=$(( SizeSourceFiles / 1024 ))
-		local SizeTargetFiles=$(( SizeTargetFiles / 1024 ))
+		size_unit="kB"
+		SizeSourceFiles=$(( SizeSourceFiles / 1024 ))
+		SizeTargetFiles=$(( SizeTargetFiles / 1024 ))
 	# Mbyte display 10 mb ->
 	elif [ "$SizeTargetFiles" -ge 10485761 ]; then
-		local size_unit="MB"
-		local SizeSourceFiles=$(( SizeSourceFiles / 1024 / 1024 ))
-		local SizeTargetFiles=$(( SizeTargetFiles / 1024 / 1024 ))
+		size_unit="MB"
+		SizeSourceFiles=$(( SizeSourceFiles / 1024 / 1024 ))
+		SizeTargetFiles=$(( SizeTargetFiles / 1024 / 1024 ))
 	fi
 
 	# Display report
