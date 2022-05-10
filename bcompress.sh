@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2086
 # bcompress - Simple bash tool for file compressing at the highest ratio
 #
 # Author : Romain Barbarot
@@ -69,7 +70,7 @@ stty -igncr						# Enable the enter key
 exit
 }
 RemoveSourceFiles() {			# Remove source files
-read -p " Remove source files? [y/N]: " qrm
+read -r -p " Remove source files? [y/N]: " qrm
 case "$qrm" in
 	"Y"|"y")
 		for f in "${filesSourceInLoop[@]}"; do
@@ -87,7 +88,7 @@ esac
 }
 RemoveTargetFiles() {			# Remove target files
 if [ "$SourceNotRemoved" = "1" ] ; then
-	read -p " Remove compressed files? [y/N]: " qrm
+	read -r -p " Remove compressed files? [y/N]: " qrm
 	case "$qrm" in
 		"Y"|"y")
 			for f in "${filesTargetInLoop[@]}"; do
@@ -359,7 +360,6 @@ for files in "${lst_compress[@]}"; do
 
 	# Compression
 	if ! [[ -s "$fileTarget" ]]; then
-	
 		(
 		# 7zip
 		if [[ "$EXT" = "7z" ]]; then
@@ -405,27 +405,38 @@ END=$(date +%s)
 }
 Report() {
 if (( "${#filesSourceInLoop[@]}" )); then
+	# Local variables
+	local DIFFS
+	local NBSourceFiles
+	local NBTargetFiles
+	local SizeSourceFiles
+	local SizeTargetFiles
+	local SizePercentage
+	
 	# Make statistics of processed files
-	DIFFS=$(($END-$START))
-	local NBSourceFiles="${#filesSourceInLoop[@]}"
-	local NBTargetFiles="${#filesTargetInLoop[@]}"
-	local SizeSourceFiles=$(du -chsb "${filesSourceInLoop[@]}" | tail -n1 | awk '{print $1;}')
-	local SizeTargetFiles=$(du -chsb "${filesTargetInLoop[@]}" | tail -n1 | awk '{print $1;}')
-	local SizePercentage=$(bc <<< "scale=2; ($SizeTargetFiles - $SizeSourceFiles)/$SizeSourceFiles * 100")
+	DIFFS=$(( END-START ))
+	NBSourceFiles="${#filesSourceInLoop[@]}"
+	NBTargetFiles="${#filesTargetInLoop[@]}"
+	SizeSourceFiles=$(du -chsb "${filesSourceInLoop[@]}" | tail -n1 | awk '{print $1;}')
+	SizeTargetFiles=$(du -chsb "${filesTargetInLoop[@]}" | tail -n1 | awk '{print $1;}')
+	SizePercentage=$(bc <<< "scale=2; ($SizeTargetFiles - $SizeSourceFiles)/$SizeSourceFiles * 100")
 
 	# Add + if no - or 0
 	if [[ "$SizePercentage" != -* ]] && [[ "$SizePercentage" != 0* ]]; then
-		local SizePercentage="+$SizePercentage"
+		SizePercentage="+$SizePercentage"
 	fi
 
 	# Make human readable size
-	if [ "$SizeTargetFiles" -ge 1 ] && [ "$SizeTargetFiles" -le 1024 ]; then				# Byte display 1b -> 1kb
+	# Byte display 1b -> 1kb
+	if [ "$SizeTargetFiles" -ge 1 ] && [ "$SizeTargetFiles" -le 1024 ]; then
 		local size_unit="B"
-	elif [ "$SizeTargetFiles" -ge 1025 ] && [ "$SizeTargetFiles" -le 10485760 ]; then		# Kbyte display 1kb -> 10mb
+	# Kbyte display 1kb -> 10mb
+	elif [ "$SizeTargetFiles" -ge 1025 ] && [ "$SizeTargetFiles" -le 10485760 ]; then
 		local size_unit="kB"
 		local SizeSourceFiles=$(( SizeSourceFiles / 1024 ))
 		local SizeTargetFiles=$(( SizeTargetFiles / 1024 ))
-	elif [ "$SizeTargetFiles" -ge 10485761 ]; then											# Mbyte display 10 mb ->
+	# Mbyte display 10 mb ->
+	elif [ "$SizeTargetFiles" -ge 10485761 ]; then
 		local size_unit="MB"
 		local SizeSourceFiles=$(( SizeSourceFiles / 1024 / 1024 ))
 		local SizeTargetFiles=$(( SizeTargetFiles / 1024 / 1024 ))
@@ -485,7 +496,6 @@ while [[ $# -gt 0 ]]; do
 			DIRECTORY="1"
 			ARGUMENT="$InputFileDir"
 		elif [ -f "$InputFileDir" ]; then													# If target is file
-			FILE="1"
 			ARGUMENT="$InputFileDir"
 		else
 			echo
@@ -555,9 +565,13 @@ esac
 shift
 done
 
+# Populate Array with sources
 SetGlobalVariables
-trap TrapExit 2 3							# Set Ctrl+c clean trap for exit all script
-trap TrapStop 20							# Set Ctrl+z clean trap for exit current loop (for debug)
+# Trap = Ctrl+c clean trap for exit all script
+trap TrapExit SIGINT SIGQUIT
+# Trap = Ctrl+z clean trap for exit current loop (for debug)
+trap TrapStop SIGTSTP
+# Tar bin test
 TarTest
 
 # Launch nothing if no selection with -i, -a or -ad
