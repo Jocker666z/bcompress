@@ -348,9 +348,11 @@ echo "$message_separator"
 stty igncr										# Disable the enter key
 for files in "${lst_compress[@]}"; do
 	# Target file name
-	if [[ "$DIRECTORY" -eq 0 ]]; then			# If file
+	# If file
+	if ! [[ -d "$files" ]]; then
 		fileTarget="${files%.*}.$EXT"
-	else										# If directory
+	# If directory
+	else
 		fileTarget="${files%/}.$EXT"
 	fi
 	# Stock target file pass in loop
