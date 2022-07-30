@@ -351,11 +351,7 @@ for files in "${lst_compress[@]}"; do
 	# Target file name
 	# If file
 	if ! [[ -d "$files" ]]; then
-		#fileTarget="${files%.*}.$EXT"
 		fileTarget="${files}.$EXT"
-		#if [[ -s "$fileTarget" ]]; then
-		#	fileTarget="${files%.*}.$EXT"
-		#fi
 	# If directory
 	else
 		fileTarget="${files%/}.$EXT"
