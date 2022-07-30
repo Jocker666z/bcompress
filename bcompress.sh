@@ -8,7 +8,6 @@
 # licence : GNU GPL-2.0
 
 # General variables
-bcompress_version="0.06a"
 nproc=$(nproc --all)																	# Set number of processor
 find_depth="10"																				# Default find depth
 CompressType="xz"
@@ -32,7 +31,7 @@ fi
 }
 Usage() {
 cat <<- EOF
-bcompress $bcompress_version - GNU GPL-2.0 Copyright - <https://github.com/Jocker666z/bcompress>
+bcompress - GNU GPL-2.0 Copyright - <https://github.com/Jocker666z/bcompress>
 
 Usage: 
    bcompress [options] <file> or <dir>
@@ -108,7 +107,7 @@ hash tar 2>/dev/null || { echo >&2 "tar it's not installed. Aborting."; exit; }
 
 CompressCmd7z() {				# 7zip cmd
 if hash 7z 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -133,7 +132,7 @@ fi
 }
 CompressCmdbz2() {				# bz2 cmd
 if hash bzip2 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -157,7 +156,7 @@ fi
 }
 CompressCmdgzip() {				# gzip cmd
 if hash gzip 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -181,7 +180,7 @@ fi
 }
 CompressCmdlz4() {				# lz4 cmd
 if hash lz4 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -205,7 +204,7 @@ fi
 }
 CompressCmdlzip() {				# lzip cmd
 if hash lzip 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -229,7 +228,7 @@ fi
 }
 CompressCmdXz() {				# xz cmd
 if hash xz 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -253,7 +252,7 @@ fi
 }
 CompressCmdZip() {				# zip cmd
 if hash zip 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -288,7 +287,7 @@ fi
 }
 CompressCmdZpaq() {				# zpaq cmd
 if hash zpaq 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -312,7 +311,7 @@ fi
 }
 CompressCmdZstd() {				# lz4 cmd
 if hash zstd 2>/dev/null; then
-	if [[ -s "$files" ]]; then
+	if [[ -s "$files" ]] || [[ -d "$files" ]]; then
 		# Source size
 		DisplayLoadingSourceSize=$(du -cbs "$files" | tail -n1 | awk '{print $1;}')
 
@@ -344,8 +343,10 @@ echo
 echo " bcompress processing $EXT compression"
 echo "$message_separator"
 
+# Disable the enter key
+stty igncr
+
 # Compressing
-stty igncr										# Disable the enter key
 for files in "${lst_compress[@]}"; do
 	# Target file name
 	# If file
@@ -400,7 +401,8 @@ for files in "${lst_compress[@]}"; do
 done
 wait
 
-stty -igncr										# Enable the enter key
+# Enable the enter key
+stty -igncr
 
 # End time counter
 END=$(date +%s)
@@ -496,7 +498,7 @@ while [[ $# -gt 0 ]]; do
 			echo
 			exit
 		elif [ -d "$InputFileDir" ]; then													# If target is directory
-			DIRECTORY="1"
+			#DIRECTORY="1"
 			ARGUMENT="$InputFileDir"
 		elif [ -f "$InputFileDir" ]; then													# If target is file
 			ARGUMENT="$InputFileDir"
