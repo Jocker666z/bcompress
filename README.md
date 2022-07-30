@@ -27,12 +27,12 @@ Options:
   -j|--jobs <number>            Number of file compressed in same time.
                                 Default: processor number
   -t|--type <compression>       Compression type:
-                                7zip (7z)
+                                7zip (7z) (default)
                                 bzip2 (tar.bz2)
                                 gzip (tar.gz)
                                 lz4 (tar.lz4)
                                 lzip (tar.lz)
-                                xz (tar.xz) (default)
+                                xz (tar.xz)
                                 zip
                                 zpaq
                                 zstd (tar.zst)

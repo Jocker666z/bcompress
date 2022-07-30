@@ -8,9 +8,9 @@
 # licence : GNU GPL-2.0
 
 # General variables
-nproc=$(nproc --all)																	# Set number of processor
-find_depth="10"																				# Default find depth
-CompressType="xz"
+nproc=$(nproc --all)											# Set number of processor
+find_depth="10"													# Default find depth
+CompressType="7zip"
 
 # Messages
 message_separator=" --------------------------------------------------------------"
@@ -48,12 +48,12 @@ Options:
   -j|--jobs <number>            Number of file compressed in same time.
                                 Default: $nproc
   -t|--type <compression>       Compression type:
-                                7zip (7z)
+                                7zip (7z) (default)
                                 bzip2 (tar.bz2)
                                 gzip (tar.gz)
                                 lz4 (tar.lz4)
                                 lzip (tar.lz)
-                                xz (tar.xz) (default)
+                                xz (tar.xz)
                                 zip
                                 zpaq
                                 zstd (tar.zst)
