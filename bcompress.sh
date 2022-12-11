@@ -39,7 +39,7 @@ Usage:
    bcompress [options] -e <ext1.ext2...>
 Options:
   -a|--all                      Compress all files in current.
-  -ad|--all                     Compress all directory in current.
+  -ad|--all_dir                 Compress all directory in current.
   -i|--input <file> or <dir>    Compress one file or directory.
   -d|--depth <number>           Specify find depth level.
                                 Default: $find_depth
