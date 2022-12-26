@@ -8,7 +8,7 @@
 # licence : GNU GPL-2.0
 
 # General variables
-nproc=$(nproc --all)											# Set number of processor
+nproc=$(grep -cE 'processor' /proc/cpuinfo)						# Set number of processor
 find_depth="10"													# Default find depth
 CompressType="7zip"
 
